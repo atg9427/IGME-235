@@ -1,5 +1,2 @@
 ErrorDocument 404 /atg9427/235/error/error.html
 DirectoryIndex noterror.html
-<IfModule pagespeed_module>
-    ModPagespeed off
-</IfModule>
