@@ -3,6 +3,3 @@ AuthName "RIT"
 ShibRequireSession On
 SSLRequireSSL
 require valid-user
-<IfModule pagespeed_module>
-    ModPagespeed off
-</IfModule>
