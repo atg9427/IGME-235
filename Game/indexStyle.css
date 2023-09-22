@@ -1,0 +1,26 @@
+main {
+    background-color: #f04c0c;
+    border: 1px solid black;
+}
+
+main, header, footer {
+    margin: 0 auto;
+}
+
+h1 {
+    color: #ce1d0c;
+    font-family: sans-serif;
+    border-bottom: 1px solid #1e1464;
+}
+blockquote {
+    background-color: #fefef9;
+    border: 3px dashed #ce1d0c;
+    padding: 1rem;
+}
+body {
+    background-color: #fefef9;
+    color: #1e1464;
+}
+a:hover {
+    color: #ce1d0c;
+}
