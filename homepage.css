@@ -4,28 +4,44 @@ body {
 }
 
 h1 {
-    border-bottom: 1px solid cyan;
+    border-bottom: 1px solid yellow;
     font-weight: bolder;
+}
+
+h2, h3 {
+    text-decoration: 1px underline yellow;
 }
 
 body {
     background-color: black;
 }
 
-a:link, a:visited {
+a:link, a#alt:link, a:visited, a#alt:visited {
     color: lightskyblue;
 }
 
-a:hover, a:active {
+a:hover, a#alt:hover, a:active, a#alt:active {
+    color: yellow;
+}
+
+a:focus, a#alt:focus {
     color: yellow;
 }
 
 main {
-    background-color: gray;
-    border: 1px dotted cyan;
+    background-color: rgb(60, 60, 60);
+    border: 3px solid yellow;
     padding: 2rem;
 }
 
 header {
     padding: 1rem;
+}
+
+a#alt {
+    text-decoration: none;
+}
+
+p#image {
+    color:lightgray;
 }
