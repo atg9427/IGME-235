@@ -3,8 +3,15 @@ h1, h2, h3, h4, h5, h6 {
     border-bottom: 1px solid red;
 }
 
+header, main, footer {
+    width: 90%;
+    margin: 0 auto;
+    margin-left: 0 auto;
+    margin-right: 0 auto;
+}
+
 figure {
-    width: 40%;
+    max-width: 650px;
     float: right;
     margin: 0 auto;
     margin-left: 0 auto;
@@ -19,12 +26,33 @@ h2 {
     clear: right;
 }
 
-#tetlist div {
-    width: 30%;
-    float: left;
-    border: 1px solid red;
+#tetlist {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+#tetlist img {
+    width: 60%;
+}
+
+div.tet {
+    flex: 1 0 450px;
+    text-align: center;
 }
 
 footer {
     clear: left;
+}
+
+span {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size:larger;
+    font-weight: bolder;
+}
+
+div.aliases {
+    text-align: left;
+    margin: 1em;
 }
