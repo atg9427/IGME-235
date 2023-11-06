@@ -130,6 +130,18 @@
         document.querySelector("#status").innerHTML = "<b>Searching for '" + displayTerm + "'</b>";
 
         console.log(url);
+
+		getData(url);
+	}
+
+	function getData(url)
+	{
+		let xhr = new XMLHttpRequest();
+		xhr.onload = dataLoaded;
+		xhr.onerror = dataError;
+
+		xhr.open("GET", url);
+		xhr.send();
 	}
 	
   </script>
