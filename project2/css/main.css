@@ -1,0 +1,111 @@
+*{
+    font-family:fantasy;
+}
+
+body {
+    background-color: lightpink;
+}
+
+header{
+    background-color: black;
+    height: 195px;
+}
+
+header h1 {
+    color: white;
+    margin: 0;
+    text-align: center;
+    font-size: 100px;
+    padding-top: 45px;
+}
+
+.widgets {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#search {
+    color: white;
+    background-color: purple;
+    text-align: center;
+    padding: 1rem;
+    margin: 1rem;
+}
+
+#status, h2 {
+    display: flex;
+    justify-content: center;
+}
+
+#status {
+    font-size: 25px;
+    margin: 1rem;
+}
+
+#content {
+    background-color: violet;
+    text-align: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.result {
+    display: flex;
+    flex-direction: column;
+}
+
+.result span {
+    order: -1;
+    background-color: purple;
+    color: white;
+    display: flex;
+    justify-content: center;
+}
+
+span a:hover, span a:active {
+    background-color: magenta;
+    color: purple;
+}
+
+.result img {
+    box-shadow: 0px 20px 10px -10px purple;
+}
+
+.footer {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin: 1rem;
+}
+
+button {
+    display: inline-block;
+    border-style : solid;
+    border-radius : 50px;
+    padding : 10px 100px;
+    cursor: pointer;
+}
+
+button.color {
+    background-color: purple;
+    color: white;
+    border-color: violet;
+}
+
+button:hover {
+    background-color: magenta;
+}
+
+@media screen and (max-width: 900px)
+{
+    header h1 {
+        font-size: 50px;
+        align-items: center;
+    }
+
+    #status {
+        font-size: 13px;
+    }
+}

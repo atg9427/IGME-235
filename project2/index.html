@@ -7,37 +7,26 @@
 	<script src="js/main.js"></script>
 </head>
 <body>
-<header>
-	<h1>Advanced GIF Search</h1>
-</header>
+	<header>
+		<h1>Advanced GIF Search</h1>
+	</header>
 
-<div class="widgets">
-	Search Term -> 
-	<input id="searchterm" type="text" size="20" maxlength="20" autofocus value="cats" />
-</div>
+	<div class="widgets">
+		<input id="search" type="text" size="50" maxlength="30"/>
+	</div>
 
-<div class="widgets">
-	Max # results -> 
-	<select id="limit">
-		<option value="5">5</option>
-		<option value="10" selected>10</option>
-		<option value="25">25</option>
-		<option value="50">50</option>
-		<option value="100">100</option>
-	</select>
-</div>
+	<div id="status">Ready to Search!</div>
+	
+	<hr>
 
-<div class="widgets">
-	<button type="button" id="search" class="green">Find some GIFs!<br />:-)</button>
-</div>
-<div id="status">Ready to Search!</div>
-<hr>
-
-<h2>Results</h2>
-<div id="content">
-	<p>No data yet!</p>
-</div>
- 
+	<h2>Search Results</h2>
+	<div id="content">
+		<p>No data yet!</p>
+	</div>
+	
+	<div class="footer">
+		<button type="button" id="get-more" class="color">Get more!</button>
+	</div>
 
 </body>
 </html>
