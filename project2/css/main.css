@@ -17,6 +17,7 @@ header h1 {
     text-align: center;
     font-size: 100px;
     padding-top: 45px;
+    align-content: center;
 }
 
 .widgets {
