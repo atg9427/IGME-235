@@ -129,8 +129,7 @@ function loadedData(e){
         let line = `<div class='result'>
         <img src='${smallURL}' title= '${result.id}' />
         <span><a target='_blank' href='${url}' >View on GIPHY</a></span>
-        <span>Rating: ${rating}</span>
-        <span>Favorite:&nbsp<button type='button' onclick='addToFavorites()' onclick='checkIfClicked(${i})' id='favorite' id='${i}' class='color'></button></span></div>`;
+        <span>Rating: ${rating}</span></div>`;
         longString += line;
         imageList.push(line);
         clickedList.push(false);
