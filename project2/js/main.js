@@ -2,18 +2,12 @@ window.onload = (e) => {
     document.getElementById("search").onchange = getResult
     document.getElementById("get-more").onclick = getMore
 
-    document.querySelector("#relevance").onclick = function(event){
-        if(document.getElementById("search").onchange != null){
-            document.getElementById("search").onchange = null
-        }
-        event.preventDefault();
+    document.getElementById("relevance").onclick = (event) => {
+        event.preventDefault()
         document.getElementById("search").onchange = getResult
     }
 
-    document.querySelector("#trending").onclick = function(event){
-        if(document.getElementById("search").onchange != null){
-            document.getElementById("search").onchange = null
-        }
+    document.getElementById("trending").onclick = (event) => {
         event.preventDefault()
         document.getElementById("search").onchange = getTrending
     }
