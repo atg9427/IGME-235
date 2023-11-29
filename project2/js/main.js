@@ -19,8 +19,6 @@ let GIPHY_URL = "";
 let GIPHY_KEY = "2o98VKLNj1kxmN1x0Sse32mmrOO2N4O1"; // Personal GIPHY API Key
 let limit = 10;
 let imageList = [];
-let favoritesList = [];
-let clickedList = [];
 
 function getResult(){
     navWord = "search";
@@ -43,7 +41,7 @@ function getResult(){
     url += "&q=" + searchedTerm + "&limit=" + limit;
 
     document.querySelector("#status").innerHTML = `<b>Searching for \"${displayTerm}\" </b>`;
-    document.querySelector("#content").innerHTML = `<div id='buffer'><img src='images/buffer-spinner.gif' height='100px' width='100px'/></div>`;
+    document.querySelector("#content").innerHTML = `<div id='buffer'><img src='images/buffer-spinner.gif' height='300px' width='300px'/></div>`;
 
     console.log(url);
     getData(url);
@@ -63,15 +61,11 @@ function getMore(){
     url += "&q=" + searchedTerm + "&limit=" + limit;
 
     document.querySelector("#status").innerHTML = `<b>Searching for \"${displayTerm}\"</b>`;
-    document.querySelector("#content").innerHTML = `<div id='buffer'><img src='images/buffer-spinner.gif' height='100px' width='100px'/></div>`;
+    document.querySelector("#content").innerHTML = `<div id='buffer'><img src='images/buffer-spinner.gif' height='300px' width='300px'/></div>`;
 
     console.log(url);
     getData(url);
 }
-
-// function getFavorites(){
-
-// }
 
 function getTrending(){
     navWord = "trending";
@@ -90,7 +84,7 @@ function getTrending(){
     url += "&q=" + searchedTerm + "&limit=" + limit;
 
     document.querySelector("#status").innerHTML = `<b>Searching for ${displayTerm} GIFs</b>`;
-    document.querySelector("#content").innerHTML = `<div id='buffer'><img src='images/buffer-spinner.gif' height='100px' width='100px'/></div>`;
+    document.querySelector("#content").innerHTML = `<div id='buffer'><img src='images/buffer-spinner.gif' height='300px' width='300px'/></div>`;
 
     console.log(url);
     getData(url);
@@ -132,7 +126,6 @@ function loadedData(e){
         <span>Rating: ${rating}</span></div>`;
         longString += line;
         imageList.push(line);
-        clickedList.push(false);
     }
     switch(navWord){
         case "search":
@@ -155,26 +148,6 @@ function loadedData(e){
     }
 }
 
-function checkIfClicked(index){
-    clickedList[index] = !clickedList[index];
-}
-
 function errorMessage(e){
     console.log("There was an error");
-}
-
-function addToFavorites(){
-    for(let i=0; i<imageList.length; ++i){
-        if(clickedList[i] = true == true){
-            if(!favoritesList.includes(imageList[i])){
-                favoritesList.push(imageList[i]);
-                console.log("Added " + imageList[i] + " to favorites");
-                break;
-            }
-        }
-    }
-}
-
-function getStyle(el, styleProp){
-    if(el.currentStyle) return e.currentStyle[styleProp];
 }
