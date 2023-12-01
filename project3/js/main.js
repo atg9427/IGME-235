@@ -208,6 +208,9 @@ function gameLoop(){
     // Move enemies
 
     // Move projectiles
+    for(p of projectiles){
+        p.move(dt);
+    }
 
     // Check for collisions
 
@@ -227,5 +230,144 @@ function gameLoop(){
     if(viruses.length == 0 && helmenths.length == 0 && bacteria.length == 0){
         level++;
         loadLevel();
+    }
+}
+
+function createViruses(numViruses){
+    for(let i = 0; i < numViruses; ++i){
+        let v = new Virus(10, 0xFFFF00);
+        v.x = Math.random() * (sceneWidth - 50) + 25;
+        v.y = Math.random() * (sceneHeight - 400) + 25;
+        viruses.push(v);
+        gameScene.addChild(v);
+    }
+}
+
+function createHelminths(numHelminths){
+    for(let i = 0; i < numHelminths; ++i){
+        let h = new Helminth(10, 0xFFFF00);
+        h.x = Math.random() * (sceneWidth - 50) + 25;
+        h.y = Math.random() * (sceneHeight - 400) + 25;
+        helminths.push(h);
+        gameScene.addChild(h);
+    }
+}
+
+function createBacteria(numBacteria){
+    for(let i = 0; i < numBacteria; ++i){
+        let b = new Bacteria(10, 0xFFFF00);
+        b.x = Math.random() * (sceneWidth - 50) + 25;
+        b.y = Math.random() * (sceneHeight - 400) + 25;
+        bacteria.push(b);
+        gameScene.addChild(b);
+    }
+}
+
+function loadLevel(){
+    createViruses(level * (Math.random() * (5-3) + 3));
+    createHelminths(level * (Math.random() * (5-2) + 2));
+    createViruses(level * (Math.random() * (7-4) + 4));
+    paused = false;
+}
+
+function end(){
+    // Pause level
+    paused = true;
+
+    // Clear level
+    viruses.forEach(v => gameScene.removeChild(v));
+    viruses = [];
+    helminths.forEach(h => gameScene.removeChild(h));
+    helminths = [];
+    bacteria.forEach(b => gameScene.removeChild(b));
+    bacteria = [];
+    projectiles.forEach(p => gameScene.removeChild(p));
+    projectiles = [];
+
+    // Show game over scene and final score
+    gameOverScene.visible = true;
+    gameScene.visible = false;
+    gameOverScoreLabel = score;
+}
+
+function fireProjectile(e){
+    if(paused) return;
+
+    let p = new Projectile(0xFFFFFF, antibody.x, antibody.y);
+    projectiles.push(p);
+    gameScene.addChild(p);
+    //shootSound.play();
+}
+
+function loadSpriteSheet(sprite){
+    let spriteSheet;
+    let width;
+    let height;
+    let numFrames;
+    let textures;
+    switch(sprite){
+        case antibodyTextures:
+            spriteSheet = PIXI.BaseTexture.from("game-images/antibody_spritesheet.png");
+            width = 160;
+            height = 160;
+            numFrames = 6;
+            textures = [];
+
+            for(let i = 0; i < numFrames; ++i){
+                let frame;
+                if(i < 2){
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle(i*width, 0, width, height));
+                } else if(i < 4){
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle((i-2)*width, 160, width, height));
+                } else{
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle((i-4)*width, 320, width, height));
+                }
+                textures.push(frame);
+            }
+            return textures;
+
+        case bacteriophageTextures:
+            spriteSheet = PIXI.BaseTexture.from("game-images/bacteriophage_spritesheet.png");
+            width = 160;
+            height = 160;
+            numFrames = 12;
+            textures = [];
+
+            for(let i = 0; i < numFrames; ++i){
+                let frame;
+                if(i < 3){
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle(i*width, 0, width, height));
+                } else if(i < 6){
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle((i-3)*width, 160, width, height));
+                } else if(i < 9){
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle((i-6)*width, 320, width, height));
+                } else{
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle((i-9)*width, 480, width, height));
+                }
+                textures.push(frame);
+            }
+            return textures;
+
+        case helminthTextures:
+            spriteSheet = PIXI.BaseTexture.from("game-images/helminth_spritesheet.png");
+            width = 160;
+            height = 160;
+            numFrames = 24;
+            textures = [];
+
+            for(let i = 0; i < numFrames; ++i){
+                let frame;
+                if(i < 6){
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle(i*width, 0, width, height));
+                } else if(i < 12){
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle((i-6)*width, 160, width, height));
+                } else if(i < 18){
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle((i-12)*width, 320, width, height));
+                } else{
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle((i-18)*width, 480, width, height));
+                }
+                textures.push(frame);
+            }
+            return textures;
     }
 }
