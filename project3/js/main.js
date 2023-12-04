@@ -201,7 +201,7 @@ function gameLoop(){
 
     // Delta time
     let dt = 1/gameWindow.ticker.FPS;
-    if(dt > 1/30) dt = 1/30;
+    if(dt > 1/12) dt = 1/12;
 
     // Move antibody
 
