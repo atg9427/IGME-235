@@ -30,15 +30,25 @@ const keys = {
     D: false
 };
 
-addEventListener("keydown", movePlayer);
-addEventListener("keyup", movePlayer);
-
-function movePlayer(event){
-    if(keys[event.code] !== undefined){
-        keys[event.code] = event.type === "keydown";
-        event.preventDefault();
+document.addEventListener('keydown', (e) => {
+    if(e.key === "w"){
+        antibody.y -= 5
+    }else if(e.key === "s"){
+        antibody.y += 5
     }
-}
+    
+    if(e.key === "a"){
+        antibody.x -= 5
+    }else if(e.key === "d"){
+        antibody.x += 5
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if(e.key === " " && projectiles.length == 0){
+        fireProjectile();
+    }
+});
 
 // Game variables
 let stage;
@@ -50,8 +60,7 @@ let viruses = [];
 let helminths = [];
 let bacteria = [];
 let projectiles = [];
-let aliens = [];
-let antibodyTextures, bacteriophageTextures, helminthTextures, explosionTextures;
+let antibodyTextures, bacteriophageTextures, helminthTextures;
 let score = 0;
 let life = 100;
 let level = 1;
@@ -77,10 +86,6 @@ function setUpGame(){
     // Create Labels & Buttons for each scene
     createLabelsAndButtons();
 
-    // Create antibody (player)
-    antibody = new Antibody();
-    gameScene.addChild(antibody);
-
     // Load sounds
     projectileSound = new Howl({src: ['sounds/shoot.mp3']});
     damageSound = new Howl({src: ['sounds/hit.mp3']});
@@ -88,9 +93,13 @@ function setUpGame(){
     startSound = new Howl({src: ['sounds/game-start.mp3']});
 
     // Load spritesheets
-    antibodyTextures = loadSpriteSheet();
-    bacteriophageTextures = loadSpriteSheet();
-    helminthTextures = loadSpriteSheet();
+    antibodyTextures = loadSpriteSheet(1);
+    bacteriophageTextures = loadSpriteSheet(2);
+    helminthTextures = loadSpriteSheet(3);
+
+    // Create antibody (player)
+    antibody = new Antibody();
+    gameScene.addChild(antibody);
 
     // Start update loop
     gameWindow.ticker.add(gameLoop);
@@ -150,8 +159,8 @@ function createLabelsAndButtons(){
     startButton.interactive = true;
     startButton.buttonMode = true;
     startButton.on("pointerup", startGame);
-    startButton.on('pointerover', e => e.target.alpha = 0.7);
-    startButton.on('pointerout', e => e.currentTarget.alpha = 1.0);
+    startButton.on('pointerover', e => e.target.alpha = 0.5);
+    startButton.on('pointerout', e => e.currentTarget.alpha = 1);
     startScene.addChild(startButton);
 
     // Make score text
@@ -206,8 +215,8 @@ function startGame(){
     life = 10;
     increaseScoreBy(0);
     decreaseLifeBy(0);
-    antibody.x = 300;
-    antibody.y = 550;
+    antibody.x = (screenWidth / 2) - (antibody.width / 2);
+    antibody.y = 650;
     loadLevel();
     startSound.play();
 }
@@ -220,7 +229,7 @@ function increaseScoreBy(point){
 function decreaseLifeBy(hit){
     life -= hit;
     life = parseInt(life);
-    lifeLabel,text = `Antibody structural integrity: ${life}`;
+    lifeLabel.text = `Antibody structural integrity: ${life}`;
 }
 
 function gameLoop(){
@@ -229,6 +238,9 @@ function gameLoop(){
     // Delta time
     let dt = 1/gameWindow.ticker.FPS;
     if(dt > 1/12) dt = 1/12;
+
+    // Animate antibody and enemies
+    //animateAntibody(antibody.x, antibody.y, 160, 160);
 
     // Move antibody
     let futurePlayerPosition = antibody;
@@ -329,7 +341,7 @@ function gameLoop(){
                 damageSound.play();
                 gameScene.removeChild(v);
                 v.isAlive = false;
-                decreaseLifeBy(10);
+                decreaseLifeBy(1);
             }
         }
 
@@ -354,7 +366,7 @@ function gameLoop(){
                 damageSound.play();
                 gameScene.removeChild(b);
                 b.isAlive = false;
-                decreaseLifeBy(10);
+                decreaseLifeBy(1);
             }
         }
 
@@ -379,7 +391,7 @@ function gameLoop(){
                 damageSound.play();
                 gameScene.removeChild(h);
                 h.isAlive = false;
-                decreaseLifeBy(10);
+                decreaseLifeBy(1);
             }
         }
 
@@ -396,7 +408,7 @@ function gameLoop(){
     }
 
     // Load next level
-    if(viruses.length == 0 && helmenths.length == 0 && bacteria.length == 0){
+    if(viruses.length == 0 && helminths.length == 0 && bacteria.length == 0){
         level++;
         loadLevel();
     }
@@ -435,7 +447,7 @@ function createBacteria(numBacteria){
 function loadLevel(){
     createViruses(level * (Math.random() * (5-3) + 3));
     createHelminths(level * (Math.random() * (5-2) + 2));
-    createViruses(level * (Math.random() * (7-4) + 4));
+    createBacteria(level * (Math.random() * (7-4) + 4));
     paused = false;
 }
 
@@ -475,7 +487,7 @@ function loadSpriteSheet(sprite){
     let numFrames;
     let textures;
     switch(sprite){
-        case antibodyTextures:
+        case 1:
             spriteSheet = PIXI.BaseTexture.from("game-images/antibody_spritesheet.png");
             width = 160;
             height = 160;
@@ -495,7 +507,7 @@ function loadSpriteSheet(sprite){
             }
             return textures;
 
-        case bacteriophageTextures:
+        case 2:
             spriteSheet = PIXI.BaseTexture.from("game-images/bacteriophage_spritesheet.png");
             width = 160;
             height = 160;
@@ -517,7 +529,7 @@ function loadSpriteSheet(sprite){
             }
             return textures;
 
-        case helminthTextures:
+        case 3:
             spriteSheet = PIXI.BaseTexture.from("game-images/helminth_spritesheet.png");
             width = 160;
             height = 160;
@@ -547,9 +559,10 @@ function animateAntibody(x, y, frameWidth, frameHeight) {
     let player = new PIXI.AnimatedSprite(antibodyTextures);
     player.x = x;
     player.y = y;
+    player.width = w2;
+    player.height = h2;
     player.animationSpeed = 1 / 12;
     player.loop = true;
-    antibody = player;
     player.play();
 }
 
