@@ -1,20 +1,23 @@
 // The player (Ship-shaped antibody)
-class Antibody extends PIXI.Sprite {
-    constructor(x = 0, y = 0){
-        super(gameWindow.loader.resources["game-images/antibody_spritesheet.png"].texture);
+class Antibody extends PIXI.AnimatedSprite {
+    constructor(x = 0, y = 0, frameWidth = 160, frameHeight = 160){
+        super(antibodyTextures);
         this.anchor.set(0.5, 0.5);
-        this.scale.set(0.1);
+        this.scale.set(0.3);
+        this.position.set((screenWidth / 2) - (this.width / 2), y);
         this.x = x;
         this.y = y;
+        this.animationSpeed = 1 / 12;
+        this.play();
     }
 }
 
 // The bacteriophage enemies (Spider-shaped viruses)
-class Virus extends PIXI.Sprite {
+class Virus extends PIXI.AnimatedSprite {
     constructor(radius, x = 0, y = 0) {
-        super(gameWindow.loader.resources["game-images/bacteriophage_spritesheet.png"].texture);
+        super(bacteriophageTextures);
         this.anchor.set(0.5, 0.5);
-        this.scale.set(0.1);
+        this.scale.set(0.3);
         this.x = x;
         this.y = y;
         this.radius = radius;
@@ -23,6 +26,9 @@ class Virus extends PIXI.Sprite {
         this.fwd = getRandomUnitVector();
         this.speed = 50;
         this.isAlive = true;
+
+        this.animationSpeed = 1 / 6;
+        this.play();
     }
 
     // Move virus autonomously
@@ -47,7 +53,7 @@ class Bacteria extends PIXI.Sprite {
     constructor(radius, x = 0, y = 0) {
         super(gameWindow.loader.resources["game-images/escherichia.png"].texture);
         this.anchor.set(0.5, 0.5);
-        this.scale.set(0.1);
+        this.scale.set(0.3);
         this.x = x;
         this.y = y;
         this.radius = radius;
@@ -62,6 +68,7 @@ class Bacteria extends PIXI.Sprite {
     move(dt = 1 / 60) {
         this.x += this.fwd.x * this.speed * dt;
         this.y += this.fwd.y * this.speed * dt;
+        this.rotation += 1 * dt;
     }
 
     // Reverse X Direction 
@@ -76,14 +83,16 @@ class Bacteria extends PIXI.Sprite {
 }
 
 // The parasitic worm enemies
-class Helminth extends PIXI.Sprite {
+class Helminth extends PIXI.AnimatedSprite {
     constructor(radius, x = 0, y = 0) {
-        super(gameWindow.loader.resources["game-images/helminth_spritesheet.png"].texture);
+        super(helminthTextures);
         this.anchor.set(0.5, 0.5);
-        this.scale.set(0.1);
+        this.scale.set(0.3);
         this.x = x;
         this.y = y;
         this.radius = radius;
+        this.animationSpeed = 1 / 3;
+        this.play();
 
         // Variables
         this.fwd = getRandomUnitVector();
@@ -95,6 +104,13 @@ class Helminth extends PIXI.Sprite {
     move(dt = 1 / 60) {
         this.x += this.fwd.x * this.speed * dt;
         this.y += this.fwd.y * this.speed * dt;
+
+        if(this.fwd.y > 0){
+            this.rotation = -Math.PI / 2;
+        }else{
+            
+            this.rotation = Math.PI / 2;
+        }
     }
 
     // Reverse X Direction
