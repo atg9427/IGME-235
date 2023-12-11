@@ -1,12 +1,13 @@
 // The player (Ship-shaped antibody)
 class Antibody extends PIXI.AnimatedSprite {
-    constructor(x = 0, y = 0, frameWidth = 160, frameHeight = 160){
+    constructor(radius, x = 0, y = 0){
         super(antibodyTextures);
         this.anchor.set(0.5, 0.5);
         this.scale.set(0.3);
         this.position.set((screenWidth / 2) - (this.width / 2), y);
         this.x = x;
         this.y = y;
+        this.radius = radius;
         this.animationSpeed = 1 / 12;
         this.play();
     }
@@ -68,7 +69,7 @@ class Bacteria extends PIXI.Sprite {
     move(dt = 1 / 60) {
         this.x += this.fwd.x * this.speed * dt;
         this.y += this.fwd.y * this.speed * dt;
-        this.rotation += 1 * dt;
+        this.rotation += 0.5 * dt;
     }
 
     // Reverse X Direction 
@@ -126,7 +127,7 @@ class Helminth extends PIXI.AnimatedSprite {
 
 // The player's projectile
 class Projectile extends PIXI.Graphics {
-    constructor(color = 0xFFFFFF, x = 0, y = 0) {
+    constructor(color, x = 0, y = 0, rot) {
         super();
         this.beginFill(color);
         this.drawRect(-2, -3, 4, 6);
@@ -135,7 +136,38 @@ class Projectile extends PIXI.Graphics {
         this.y = y;
 
         // Variables
-        this.fwd = {x: 0, y: -1};
+        // Left
+        if(rot == 3 * Math.PI / 2){
+            this.fwd = {x: -1, y: 0}
+        }
+        // Right
+        else if(rot == Math.PI / 2){
+            this.fwd = {x: 1, y: 0};
+        }
+        // Up
+        else if(rot == 0){
+            this.fwd = {x: 0, y: -1};
+        }
+        // Down
+        else if(rot == Math.PI){
+            this.fwd = {x: 0, y: 1};
+        }
+        // Up-Left
+        else if(rot == 7 * Math.PI / 4){
+            this.fwd = {x: -1, y: -1};
+        }
+        // Up-Right
+        else if(rot == Math.PI / 4){
+            this.fwd = {x: 1, y: -1};
+        }
+        // Down-Left
+        else if(rot == 5 * Math.PI / 4){
+            this.fwd = {x: -1, y: 1};
+        }
+        // Down-Right
+        else if(rot == 3 * Math.PI / 4){
+            this.fwd = {x: 1, y: 1};
+        }
         this.speed = 400;
         this.isAlive = true;
         Object.seal(this);

@@ -1,5 +1,5 @@
 function lerp(start, end, amt){
-    return start * (1-amt) + amt * end;
+  return start * (1 - amt) + amt * end;
 }
 
 function clamp(val, min, max){
@@ -13,21 +13,21 @@ function rectsIntersect(a,b){
 }
 
 function getRandomUnitVector(){
-  let x = getRandom(-1,1);
-  let y = getRandom(-1,1);
-  let length = Math.sqrt(x*x + y*y);
+  let x = getRandom(-1, 1);
+  let y = getRandom(-1, 1);
+  let length = Math.sqrt(x * x + y * y);
   if(length == 0){
-      x=1;
-      y=0;
-      length = 1;
-  } else{
-      x /= length;
-      y /= length;
+    x = 1;
+    y = 0;
+    length = 1;
+  }else{
+    x /= length;
+    y /= length;
   }
 
-  return {x:x, y:y};
+  return {x: x, y: y};
 }
 
-function getRandom(min, max) {
+function getRandom(min, max){
   return Math.random() * (max - min) + min;
 }

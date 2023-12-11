@@ -24,28 +24,83 @@ gameWindow.loader.load();
 
 // Controls
 const keys = {
-    W: false,
+    W: true,
     A: false,
-    S: false,
+    S: true,
     D: false
 };
 
+const direction = {
+    Up: false,
+    Down: false,
+    Left: false,
+    Right: false
+};
+
+// Event to move player
 document.addEventListener('keydown', (e) => {
+    // Reset directions to false
+    direction.Up = false
+    direction.Down = false
+    direction.Left = false
+    direction.Right = false
+
+    e.preventDefault()
     if(e.key === "w"){
-        antibody.y -= 5
-    }else if(e.key === "s"){
-        antibody.y += 5
+        keys.W = false
     }
-    
+    if(e.key === "s"){
+        keys.S = false
+    }
     if(e.key === "a"){
-        antibody.x -= 5
-    }else if(e.key === "d"){
-        antibody.x += 5
+        keys.A = true
+    }
+    if(e.key === "d"){
+        keys.D = true
+    }
+
+    if(!keys.W){
+        direction.Up = true
+    }
+
+    if(!keys.S){
+        direction.Down = true
+    }
+
+    if(keys.A){
+        direction.Left = true
+    }
+
+    if(keys.D){
+        direction.Right = true
     }
 });
 
+// Event to stop moving player
+document.addEventListener('keyup', (e) => {
+    e.preventDefault()
+    if(e.key === "w"){
+        keys.W = true
+        direction.Up = false
+    }
+    if(e.key === "s"){
+        keys.S = true
+        direction.Down = false
+    }
+    if(e.key === "a"){
+        keys.A = false
+        direction.Left = false
+    }
+    if(e.key === "d"){
+        keys.D = false
+        direction.Right = false
+    }
+});
+
+// Projectile event
 document.addEventListener('keydown', (e) => {
-    if(e.key === " " && projectiles.length == 0){
+    // Can only have up to 3 on screen
+    if(e.key === " " && projectiles.length < 3){
         fireProjectile();
     }
 });
@@ -98,7 +153,7 @@ function setUpGame(){
     helminthTextures = loadSpriteSheet(3);
 
     // Create antibody (player)
-    antibody = new Antibody();
+    antibody = new Antibody(2.5);
     gameScene.addChild(antibody);
 
     // Start update loop
@@ -108,7 +163,6 @@ function setUpGame(){
 }
 
 function createLabelsAndButtons(){
-
     // Set button and text styles
     let buttonStyle = new PIXI.TextStyle({
         fill: 0x00FF00,
@@ -117,11 +171,9 @@ function createLabelsAndButtons(){
     });
 
     let textStyle = new PIXI.TextStyle({
-        fill: 0x38761D,
+        fill: 0x00FF00,
         fontSize: 18,
         fontFamily: "Copperplate, Copperplate Gothic Light, Fantasy",
-        stroke: 0x00FF00,
-        strokeThickness: 4
     });
 
     // Make title
@@ -130,7 +182,7 @@ function createLabelsAndButtons(){
         fill: 0x38761D,
         fontSize: 96,
         fontFamily: "Copperplate, Copperplate Gothic Light, Fantasy",
-        stroke: 0x00FF00,
+        stroke: 0xFFFFFF,
         strokeThickness: 6
     });
     titleLabel.x = (screenWidth / 2) - (titleLabel.width / 2);
@@ -138,14 +190,14 @@ function createLabelsAndButtons(){
     startScene.addChild(titleLabel);
 
     // Make subtitle
-    let subtitleLabel = new PIXI.Text("Can you defend the body?");
+    let subtitleLabel = new PIXI.Text(" Can you defend the body? ");
     subtitleLabel.style = new PIXI.TextStyle({
         fill: 0x38761D,
         fontSize: 32,
         fontFamily: "Copperplate, Copperplate Gothic Light, Fantasy",
-        fontStyle: "italic",
-        stroke: 0x00FF00,
-        strokeThickness: 6
+        //fontStyle: "italic",
+        stroke: 0xFFFFFF,
+        strokeThickness: 2
     });
     subtitleLabel.x = (screenWidth / 2) - (subtitleLabel.width / 2);
     subtitleLabel.y = titleLabel.y * 2;
@@ -186,8 +238,8 @@ function createLabelsAndButtons(){
         fill: 0x38761D,
         fontSize: 64,
         fontFamily: "Copperplate, Copperplate Gothic Light, Fantasy",
-        stroke: 0x00FF00,
-        strokeThickness: 6
+        stroke: 0xFFFFFF,
+        strokeThickness: 3
     });
     gameOverText.x = (screenWidth / 2) - (gameOverText.width / 2);
     gameOverText.y = screenHeight / 2 - 160;
@@ -206,6 +258,7 @@ function createLabelsAndButtons(){
     gameOverScene.addChild(retryButton);
 }
 
+// Start the game
 function startGame(){
     startScene.visible = false;
     gameOverScene.visible = false;
@@ -221,11 +274,13 @@ function startGame(){
     startSound.play();
 }
 
+// Increase the score
 function increaseScoreBy(point){
     score += point;
     scoreLabel.text = `Exterminated: ${score}`;
 }
 
+// Decrease the health
 function decreaseLifeBy(hit){
     life -= hit;
     life = parseInt(life);
@@ -238,9 +293,6 @@ function gameLoop(){
     // Delta time
     let dt = 1/gameWindow.ticker.FPS;
     if(dt > 1/12) dt = 1/12;
-
-    // Animate antibody and enemies
-    //animateAntibody(antibody.x, antibody.y, 160, 160);
 
     // Move antibody
     let futurePlayerPosition = antibody;
@@ -270,6 +322,30 @@ function gameLoop(){
 
     antibody.x = clamp(newX, 0 + w2, screenWidth - w2);
     antibody.y = clamp(newY, 0 + h2, screenHeight - h2);
+
+    // Make player face direction it's moving in
+    if(direction.Left && !direction.Up && !direction.Down){
+        antibody.rotation = 3 * Math.PI / 2;
+    }
+    else if(direction.Right && !direction.Up && !direction.Down){
+        antibody.rotation = Math.PI / 2;
+    }
+    else if(direction.Up){
+        antibody.rotation = 0;
+        if(direction.Left){
+            antibody.rotation = 7 * Math.PI / 4
+        }else if(direction.Right){
+            antibody.rotation = Math.PI / 4
+        }
+    }
+    else if(direction.Down){
+        antibody.rotation = Math.PI;
+        if(direction.Left){
+            antibody.rotation = 5 * Math.PI / 4
+        }else if(direction.Right){
+            antibody.rotation = 3 * Math.PI / 4
+        }
+    }
 
     // Move enemies
         // 1 - Move Viruses
@@ -333,7 +409,8 @@ function gameLoop(){
                     increaseScoreBy(1);
                 }
 
-                if (p.y < -10) p.isAlive = false;
+                // Remove every projectile that is out of bounds
+                if (p.y < -10 || p.y > screenHeight + 10 || p.x < -10 || p.x > screenWidth + 10) p.isAlive = false;
             }
             
             // Viruses & Antibody
@@ -416,7 +493,7 @@ function gameLoop(){
 
 function createViruses(numViruses){
     for(let i = 0; i < numViruses; ++i){
-        let v = new Virus(10);
+        let v = new Virus(2.5);
         v.x = Math.random() * (screenWidth - 50) + 25;
         v.y = Math.random() * (screenHeight - 400) + 25;
         viruses.push(v);
@@ -426,7 +503,7 @@ function createViruses(numViruses){
 
 function createHelminths(numHelminths){
     for(let i = 0; i < numHelminths; ++i){
-        let h = new Helminth(10);
+        let h = new Helminth(2.5);
         h.x = Math.random() * (screenWidth - 50) + 25;
         h.y = Math.random() * (screenHeight - 400) + 25;
         helminths.push(h);
@@ -436,7 +513,7 @@ function createHelminths(numHelminths){
 
 function createBacteria(numBacteria){
     for(let i = 0; i < numBacteria; ++i){
-        let b = new Bacteria(10);
+        let b = new Bacteria(2.5);
         b.x = Math.random() * (screenWidth - 50) + 25;
         b.y = Math.random() * (screenHeight - 400) + 25;
         bacteria.push(b);
@@ -474,7 +551,7 @@ function end(){
 function fireProjectile(e){
     if(paused) return;
 
-    let p = new Projectile(0xFFFFFF, antibody.x, antibody.y);
+    let p = new Projectile(0xFFFFFF, antibody.x, antibody.y, antibody.rotation);
     projectiles.push(p);
     gameScene.addChild(p);
     projectileSound.play();
