@@ -12,6 +12,7 @@ const screenHeight = gameWindow.view.height;
 
 // Pre-load images
 gameWindow.loader.add([
+    "game-images/abstract-background.gif",
     "game-images/antibody_spritesheet.png",
     "game-images/bacteriophage_spritesheet.png",
     "game-images/escherichia.png",
@@ -108,14 +109,14 @@ document.addEventListener('keydown', (e) => {
 // Game variables
 let stage;
 let startScene;
-let gameScene, antibody, scoreLabel, lifeLabel, deathSound, damageSound, projectileSound, startSound;
+let gameScene, antibody, background, scoreLabel, lifeLabel, levelLabel, deathSound, damageSound, projectileSound, startSound;
 let gameOverScene;
 
 let viruses = [];
 let helminths = [];
 let bacteria = [];
 let projectiles = [];
-let antibodyTextures, bacteriophageTextures, helminthTextures;
+let antibodyTextures, bacteriophageTextures, helminthTextures, backgroundTextures;
 let score = 0;
 let life = 100;
 let level = 1;
@@ -137,6 +138,11 @@ function setUpGame(){
     gameOverScene = new PIXI.Container();
     gameOverScene.visible = false;
     stage.addChild(gameOverScene);
+
+    // Create background
+    backgroundTextures = loadSpriteSheet(4);
+    background = new Background();
+    gameScene.addChild(background);
 
     // Create Labels & Buttons for each scene
     createLabelsAndButtons();
@@ -231,6 +237,14 @@ function createLabelsAndButtons(){
     gameScene.addChild(lifeLabel);
     decreaseLifeBy(0);
 
+    // Make level label
+    levelLabel = new PIXI.Text();
+    levelLabel.style = textStyle;
+    levelLabel.x = 5;
+    levelLabel.y = 47;
+    gameScene.addChild(levelLabel);
+    increaseLevelBy(0);
+
     // Make game over text
     gameOverScoreLabel = 0;
     let gameOverText = new PIXI.Text("You were destroyed...\nalong with hope of saving the body...");
@@ -268,6 +282,7 @@ function startGame(){
     life = 10;
     increaseScoreBy(0);
     decreaseLifeBy(0);
+    increaseLevelBy(0);
     antibody.x = (screenWidth / 2) - (antibody.width / 2);
     antibody.y = 650;
     loadLevel();
@@ -287,6 +302,12 @@ function decreaseLifeBy(hit){
     lifeLabel.text = `Antibody structural integrity: ${life}`;
 }
 
+function increaseLevelBy(num = 1){
+    level += num;
+    level = parseInt(level);
+    levelLabel.text = `Area: ${level}`;
+}
+
 function gameLoop(){
     if(paused) return;
 
@@ -296,22 +317,22 @@ function gameLoop(){
 
     // Move antibody
     let futurePlayerPosition = antibody;
-    let velocity = 7 * dt;
+    let velocity = 1 * dt;
 
     if(keys.W){
-        futurePlayerPosition.y += 5;
+        futurePlayerPosition.y += 5 + velocity;
     }
 
     if(keys.A){
-        futurePlayerPosition.x -= 5;
+        futurePlayerPosition.x -= 5 + velocity;
     }
 
     if(keys.S){
-        futurePlayerPosition.y -= 5;
+        futurePlayerPosition.y -= 5 + velocity;
     }
 
     if(keys.D){
-        futurePlayerPosition.x += 5;
+        futurePlayerPosition.x += 5 + velocity;
     }
 
     let newX = lerp(antibody.x, futurePlayerPosition.x, velocity);
@@ -486,7 +507,7 @@ function gameLoop(){
 
     // Load next level
     if(viruses.length == 0 && helminths.length == 0 && bacteria.length == 0){
-        level++;
+        increaseLevelBy(1);
         loadLevel();
     }
 }
@@ -627,41 +648,28 @@ function loadSpriteSheet(sprite){
                 textures.push(frame);
             }
             return textures;
+        case 4:
+            spriteSheet = PIXI.BaseTexture.from("game-images/background.png");
+            width = 1000;
+            height = 1000;
+            numFrames = 37;
+            textures = [];
+
+            for(let i = 0; i < numFrames; i++){
+                let frame;
+                if(i < 9){
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle(i*width, 0, width, height));
+                } else if(i < 18){
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle((i-9)*width, 1000, width, height));
+                } else if(i < 27){
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle((i-18)*width, 2000, width, height));
+                } else if(i < 36){
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle((i-27)*width, 3000, width, height));
+                } else{
+                    frame = new PIXI.Texture(spriteSheet, new PIXI.Rectangle((i-36)*width, 4000, width, height));
+                }
+                textures.push(frame);
+            }
+            return textures;
     }
-}
-
-function animateAntibody(x, y, frameWidth, frameHeight) {
-    let w2 = frameWidth / 2;
-    let h2 = frameHeight / 2;
-    let player = new PIXI.AnimatedSprite(antibodyTextures);
-    player.x = x;
-    player.y = y;
-    player.width = w2;
-    player.height = h2;
-    player.animationSpeed = 1 / 12;
-    player.loop = true;
-    player.play();
-}
-
-function animateVirus(x, y, frameWidth, frameHeight) {
-    let w2 = frameWidth / 2;
-    let h2 = frameHeight / 2;
-    let virus = new PIXI.AnimatedSprite(bacteriophageTextures);
-    virus.x = x;
-    virus.y = y;
-    virus.animationSpeed = 1 / 12;
-    virus.loop = true;
-    virus.play();
-}
-
-function animateHelminth(x, y, frameWidth, frameHeight) {
-    let w2 = frameWidth / 2;
-    let h2 = frameHeight / 2;
-    let worm = new PIXI.AnimatedSprite(helminthTextures);
-    worm.x = x;
-    worm.y = y;
-    worm.animationSpeed = 1 / 12;
-    worm.loop = true;
-    //gameScene.addChild(worm);
-    worm.play();
 }

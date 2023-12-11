@@ -1,3 +1,19 @@
+class Background extends PIXI.AnimatedSprite {
+    constructor(x = 0, y = 0){
+        super(backgroundTextures);
+        this.color = 0x000000;
+        this.anchor.set(0, 0);
+        this.scale.set(1);
+        this.width = screenWidth;
+        this.height = screenHeight;
+        this.position.set((screenWidth / 2) - (this.width / 2), (screenHeight/2) - (this.height / 2));
+        this.x = x;
+        this.y = y;
+        this.animationSpeed = 1 / 3;
+        this.play();
+    }
+}
+
 // The player (Ship-shaped antibody)
 class Antibody extends PIXI.AnimatedSprite {
     constructor(radius, x = 0, y = 0){
@@ -25,7 +41,7 @@ class Virus extends PIXI.AnimatedSprite {
 
         // Variables
         this.fwd = getRandomUnitVector();
-        this.speed = 50;
+        this.speed = 75;
         this.isAlive = true;
 
         this.animationSpeed = 1 / 6;
@@ -97,7 +113,7 @@ class Helminth extends PIXI.AnimatedSprite {
 
         // Variables
         this.fwd = getRandomUnitVector();
-        this.speed = 50;
+        this.speed = 100;
         this.isAlive = true;
     }
 
