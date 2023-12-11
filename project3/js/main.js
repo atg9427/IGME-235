@@ -1,5 +1,3 @@
-let gameOverScoreLabel;
-
 "use strict";
 
 // Make screen dimensions and add it to document.body
@@ -109,7 +107,7 @@ document.addEventListener('keydown', (e) => {
 // Game variables
 let stage;
 let startScene;
-let gameScene, antibody, background, scoreLabel, lifeLabel, levelLabel, deathSound, damageSound, projectileSound, startSound;
+let gameScene, antibody, background, scoreLabel, lifeLabel, levelLabel, gameOverScoreLabel, deathSound, damageSound, projectileSound, startSound;
 let gameOverScene;
 
 let viruses = [];
@@ -246,7 +244,6 @@ function createLabelsAndButtons(){
     increaseLevelBy(0);
 
     // Make game over text
-    gameOverScoreLabel = 0;
     let gameOverText = new PIXI.Text("You were destroyed...\nalong with hope of saving the body...");
     gameOverText.style = new PIXI.TextStyle({
         fill: 0x38761D,
@@ -258,6 +255,7 @@ function createLabelsAndButtons(){
     gameOverText.x = (screenWidth / 2) - (gameOverText.width / 2);
     gameOverText.y = screenHeight / 2 - 160;
     gameOverScene.addChild(gameOverText);
+
 
     // Make retry button
     let retryButton = new PIXI.Text("Retry?");
@@ -317,22 +315,23 @@ function gameLoop(){
 
     // Move antibody
     let futurePlayerPosition = antibody;
+    let speed = 3;
     let velocity = 1 * dt;
 
     if(keys.W){
-        futurePlayerPosition.y += 5 + velocity;
+        futurePlayerPosition.y += speed + velocity;
     }
 
     if(keys.A){
-        futurePlayerPosition.x -= 5 + velocity;
+        futurePlayerPosition.x -= speed + velocity;
     }
 
     if(keys.S){
-        futurePlayerPosition.y -= 5 + velocity;
+        futurePlayerPosition.y -= speed + velocity;
     }
 
     if(keys.D){
-        futurePlayerPosition.x += 5 + velocity;
+        futurePlayerPosition.x += speed + velocity;
     }
 
     let newX = lerp(antibody.x, futurePlayerPosition.x, velocity);
@@ -412,7 +411,7 @@ function gameLoop(){
         }
 
     // Move projectiles
-    for(p of projectiles){
+    for(let p of projectiles){
         p.move(dt);
     }
 
@@ -563,10 +562,12 @@ function end(){
     projectiles.forEach(p => gameScene.removeChild(p));
     projectiles = [];
 
-    // Show game over scene and final score
+    // Show game over scene and final score\
+    gameOverScoreLabel = score;
+    gameOverScoreLabel = parseInt(gameOverScoreLabel);
     gameOverScene.visible = true;
     gameScene.visible = false;
-    gameOverScoreLabel = score;
+    deathSound.play();
 }
 
 function fireProjectile(e){

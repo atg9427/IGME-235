@@ -1,7 +1,6 @@
 class Background extends PIXI.AnimatedSprite {
     constructor(x = 0, y = 0){
         super(backgroundTextures);
-        this.color = 0x000000;
         this.anchor.set(0, 0);
         this.scale.set(1);
         this.width = screenWidth;
@@ -9,7 +8,7 @@ class Background extends PIXI.AnimatedSprite {
         this.position.set((screenWidth / 2) - (this.width / 2), (screenHeight/2) - (this.height / 2));
         this.x = x;
         this.y = y;
-        this.animationSpeed = 1 / 3;
+        this.animationSpeed = 1 / 2;
         this.play();
     }
 }
@@ -108,7 +107,7 @@ class Helminth extends PIXI.AnimatedSprite {
         this.x = x;
         this.y = y;
         this.radius = radius;
-        this.animationSpeed = 1 / 3;
+        this.animationSpeed = 3 / 4;
         this.play();
 
         // Variables
