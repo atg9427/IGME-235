@@ -1,3 +1,6 @@
+// ***All ES6 Classes are here***
+
+// The background (immune system)
 class Background extends PIXI.AnimatedSprite {
     constructor(x = 0, y = 0){
         super(backgroundTextures);
@@ -40,10 +43,10 @@ class Virus extends PIXI.AnimatedSprite {
 
         // Variables
         this.fwd = getRandomUnitVector();
-        this.speed = 75;
+        this.speed = 75 + level * 5;
         this.isAlive = true;
 
-        this.animationSpeed = 1 / 6;
+        this.animationSpeed = 1 / 4;
         this.play();
     }
 
@@ -76,7 +79,7 @@ class Bacteria extends PIXI.Sprite {
 
         // Variables
         this.fwd = getRandomUnitVector();
-        this.speed = 50;
+        this.speed = 50 + level * 5;
         this.isAlive = true;
     }
 
@@ -112,7 +115,7 @@ class Helminth extends PIXI.AnimatedSprite {
 
         // Variables
         this.fwd = getRandomUnitVector();
-        this.speed = 100;
+        this.speed = 100 + level * 5;
         this.isAlive = true;
     }
 

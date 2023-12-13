@@ -1,7 +1,7 @@
 "use strict";
 
 // Make screen dimensions and add it to document.body
-const gameWindow = new PIXI.Application({width: 1500, height: 700});
+const gameWindow = new PIXI.Application({width: window.innerWidth - 20, height: window.innerHeight - 20});
 document.body.appendChild(gameWindow.view);
 
 // Make screen dimensions constants
@@ -63,15 +63,12 @@ document.addEventListener('keydown', (e) => {
     if(!keys.W){
         direction.Up = true
     }
-
     if(!keys.S){
         direction.Down = true
     }
-
     if(keys.A){
         direction.Left = true
     }
-
     if(keys.D){
         direction.Right = true
     }
@@ -98,19 +95,65 @@ document.addEventListener('keyup', (e) => {
     }
 });
 
-// Projectile event
+// Projectile and pause event
 document.addEventListener('keydown', (e) => {
     // Can only have up to 3 on screen
-    if(e.key === " " && projectiles.length < 3){
-        fireProjectile();
+    if(e.key == " " && projectiles.length < 3){
+        fireProjectile()
+    }
+    if(e.key == "f" && gameScene.visible){
+        paused = !paused
+
+        if(paused == true){
+            background.stop()
+            antibody.stop()
+            for(let v of viruses){
+                v.stop()
+            }
+            for(let h of helminths){
+                h.stop()
+            }
+
+            // Pause screen
+            pauseLabel = new PIXI.Text("Paused\n\nPress F to continue")
+            pauseLabel.style = new PIXI.TextStyle({
+                fill: 0xFFFFFF,
+                fontSize: 32,
+                fontFamily: "Copperplate, Copperplate Gothic Light, Fantasy",
+                stroke: 0x38761D,
+                strokeThickness: 3,
+                align: "center"
+            })
+            pauseLabel.x = (screenWidth / 2) - (pauseLabel.width / 2)
+            pauseLabel.y = 120
+            gameScene.addChild(pauseLabel)
+
+        }else{
+            gameScene.removeChild(pauseLabel)
+            background.play()
+            antibody.play()
+            for(let v of viruses){
+                v.play()
+            }
+            for(let h of helminths){
+                h.play()
+            }
+        }
+
+        // Keep the player from moving on its own after unpausing
+        keys.W = true
+        keys.S = true
+        keys.A = false
+        keys.D = false
     }
 });
 
 // Game variables
 let stage;
-let startScene;
-let gameScene, antibody, background, scoreLabel, lifeLabel, levelLabel, gameOverScoreLabel, deathSound, damageSound, projectileSound, startSound;
-let gameOverScene;
+let startScene, controlsScene, gameScene, gameOverScene;
+let antibody, background
+let pauseLabel, scoreLabel, lifeLabel, levelLabel, gameOverScoreLabel;
+let deathSound, damageSound, projectileSound, startSound;
 
 let viruses = [];
 let helminths = [];
@@ -124,10 +167,16 @@ let paused = true;
 
 function setUpGame(){
     stage = gameWindow.stage;
+    console.log(window.innerWidth);
 
     // Start scene
     startScene = new PIXI.Container();
+    startScene.visible = true;
     stage.addChild(startScene);
+
+    controlsScene = new PIXI.Container();
+    controlsScene.visible = false;
+    stage.addChild(controlsScene);
 
     // Game scene
     gameScene = new PIXI.Container();
@@ -169,6 +218,7 @@ function setUpGame(){
 }
 
 function createLabelsAndButtons(){
+
     // Set button and text styles
     let buttonStyle = new PIXI.TextStyle({
         fill: 0x00FF00,
@@ -196,14 +246,14 @@ function createLabelsAndButtons(){
     startScene.addChild(titleLabel);
 
     // Make subtitle
-    let subtitleLabel = new PIXI.Text(" Can you defend the body? ");
+    let subtitleLabel = new PIXI.Text(" Made by Alexander Gough ");
     subtitleLabel.style = new PIXI.TextStyle({
-        fill: 0x38761D,
+        fill: 0xFFFFFF,
         fontSize: 32,
         fontFamily: "Copperplate, Copperplate Gothic Light, Fantasy",
-        //fontStyle: "italic",
-        stroke: 0xFFFFFF,
-        strokeThickness: 2
+        fontStyle: "italic",
+        stroke: 0x38761D,
+        strokeThickness: 3
     });
     subtitleLabel.x = (screenWidth / 2) - (subtitleLabel.width / 2);
     subtitleLabel.y = titleLabel.y * 2;
@@ -213,13 +263,64 @@ function createLabelsAndButtons(){
     let startButton = new PIXI.Text("Start");
     startButton.style = buttonStyle;
     startButton.x = (screenWidth / 2) - (startButton.width / 2);
-    startButton.y = (1.25 * (screenHeight / 2)) - (startButton.height / 2);
+    startButton.y = (1.125 * (screenHeight / 2)) - (startButton.height / 2);
     startButton.interactive = true;
     startButton.buttonMode = true;
-    startButton.on("pointerup", startGame);
+    startButton.on('pointerup', startGame);
     startButton.on('pointerover', e => e.target.alpha = 0.5);
     startButton.on('pointerout', e => e.currentTarget.alpha = 1);
     startScene.addChild(startButton);
+
+    // Make controls button
+    let controlButton = new PIXI.Text("Controls");
+    controlButton.style = buttonStyle;
+    controlButton.x = (screenWidth / 2) - (controlButton.width / 2);
+    controlButton.y = startButton.y + 50;
+    controlButton.interactive = true;
+    controlButton.buttonMode = true;
+    controlButton.on('pointerup', showControls);
+    controlButton.on('pointerover', e => e.target.alpha = 0.5);
+    controlButton.on('pointerout', e => e.currentTarget.alpha = 1);
+    startScene.addChild(controlButton);
+
+    // Show Controls Header
+    let controlsHeader = new PIXI.Text("Controls");
+    controlsHeader.style = new PIXI.TextStyle({
+        fill: 0x38761D,
+        fontSize: 64,
+        fontFamily: "Copperplate, Copperplate Gothic Light, Fantasy",
+        stroke: 0xFFFFFF,
+        strokeThickness: 3
+    });
+    controlsHeader.x = (screenWidth / 2) - (controlsHeader.width / 2);
+    controlsHeader.y = (screenHeight / 2) - 100;
+    controlsScene.addChild(controlsHeader);
+
+    // Show Controls Text
+    let controlsText = new PIXI.Text("WASD: Move\nSpace: Fire\nF: Pause");
+    controlsText.style = new PIXI.TextStyle({
+        fill: 0xFFFFFF,
+        fontSize: 32,
+        fontFamily: "Copperplate, Copperplate Gothic Light, Fantasy",
+        stroke: 0x38761D,
+        strokeThickness: 3,
+        align: "center"
+    });
+    controlsText.x = (screenWidth / 2) - (controlsText.width / 2);
+    controlsText.y = controlsHeader.y + controlsHeader.height;
+    controlsScene.addChild(controlsText);
+
+    // Back button
+    let backButton = new PIXI.Text("← Back");
+    backButton.style = buttonStyle;
+    backButton.x = 20;
+    backButton.y = 20;
+    backButton.interactive = true;
+    backButton.buttonMode = true;
+    backButton.on('pointerup', returnToMenu);
+    backButton.on('pointerover', e => e.target.alpha = 0.5);
+    backButton.on('pointerout', e => e.currentTarget.alpha = 1);
+    controlsScene.addChild(backButton);
 
     // Make score text
     scoreLabel = new PIXI.Text();
@@ -254,29 +355,71 @@ function createLabelsAndButtons(){
         stroke: 0xFFFFFF,
         strokeThickness: 3
     });
-    gameOverText.x = (screenWidth / 2) - (gameOverText.width / 2);
-    gameOverText.y = screenHeight / 2 - 160;
-    gameOverScene.addChild(gameOverText);
 
+    if(window.innerWidth < 768){
+        gameOverText.style = new PIXI.TextStyle({
+            fill: 0x38761D,
+            fontSize: 32,
+            fontFamily: "Copperplate, Copperplate Gothic Light, Fantasy",
+            stroke: 0xFFFFFF,
+            strokeThickness: 3,
+            align: "center"
+        });
+    }
+    gameOverText.x = (screenWidth / 2) - (gameOverText.width / 2);
+    gameOverText.y = screenHeight / 2 - 170;
+    gameOverScene.addChild(gameOverText);
 
     // Make retry button
     let retryButton = new PIXI.Text("Retry?");
     retryButton.style = buttonStyle;
+
+    if(window.innerWidth < 768){
+        retryButton.style = new PIXI.TextStyle({
+            fill: buttonStyle.fill,
+            fontSize: 32,
+            fontFamily: "Copperplate, Copperplate Gothic Light, Fantasy",
+        });
+    }
+
     retryButton.x = (screenWidth / 2) - (retryButton.width / 2);
-    retryButton.y = screenHeight - 120;
+    retryButton.y = (screenHeight / 2) + 150;
     retryButton.interactive = true;
     retryButton.buttonMode = true;
     retryButton.on("pointerup", startGame);
     retryButton.on('pointerover', e => e.target.alpha = 0.7);
     retryButton.on('pointerout', e => e.currentTarget.alpha = 1.0);
     gameOverScene.addChild(retryButton);
+
+    // Return to menu button
+    let returnButton = new PIXI.Text("Return to menu");
+    returnButton.style = buttonStyle;
+
+    if(window.innerWidth < 768){
+        returnButton.style = new PIXI.TextStyle({
+            fill: buttonStyle.fill,
+            fontSize: 32,
+            fontFamily: "Copperplate, Copperplate Gothic Light, Fantasy",
+        });
+    }
+
+    returnButton.x = (screenWidth / 2) - (returnButton.width / 2);
+    returnButton.y = retryButton.y + retryButton.height;
+    returnButton.interactive = true;
+    returnButton.buttonMode = true;
+    returnButton.on('pointerup', returnToMenu);
+    returnButton.on('pointerover', e => e.target.alpha = 0.5);
+    returnButton.on('pointerout', e => e.currentTarget.alpha = 1);
+    gameOverScene.addChild(returnButton);
 }
 
 // Start the game
 function startGame(){
+    gameOverScene.removeChild(gameOverScoreLabel);
     startScene.visible = false;
-    gameOverScene.visible = false;
+    controlsScene.visible = false;
     gameScene.visible = true;
+    gameOverScene.visible = false;
     level = 1;
     score = 0;
     life = 10;
@@ -287,6 +430,22 @@ function startGame(){
     antibody.y = 650;
     loadLevel();
     startSound.play();
+}
+
+// Move to the controls scene
+function showControls(){
+    startScene.visible = false;
+    controlsScene.visible = true;
+    gameScene.visible = false;
+    gameOverScene.visible = false;
+}
+
+// Return to the start scene
+function returnToMenu(){
+    startScene.visible = true;
+    controlsScene.visible = false;
+    gameScene.visible = false;
+    gameOverScene.visible = false;
 }
 
 // Increase the score
@@ -302,12 +461,14 @@ function decreaseLifeBy(hit){
     lifeLabel.text = `Antibody structural integrity: ${life}`;
 }
 
+// Increase the level
 function increaseLevelBy(num = 1){
     level += num;
     level = parseInt(level);
     levelLabel.text = `Area: ${level}`;
 }
 
+// Updates the game every frame
 function gameLoop(){
     if(paused) return;
 
@@ -318,26 +479,26 @@ function gameLoop(){
     // Move antibody
     let futurePlayerPosition = antibody;
     let speed = 3;
-    let velocity = 1 * dt;
+    let amount = 1 * dt;
 
     if(keys.W){
-        futurePlayerPosition.y += speed + velocity;
+        futurePlayerPosition.y += speed + amount;
     }
 
     if(keys.A){
-        futurePlayerPosition.x -= speed + velocity;
+        futurePlayerPosition.x -= speed + amount;
     }
 
     if(keys.S){
-        futurePlayerPosition.y -= speed + velocity;
+        futurePlayerPosition.y -= speed + amount;
     }
 
     if(keys.D){
-        futurePlayerPosition.x += speed + velocity;
+        futurePlayerPosition.x += speed + amount;
     }
 
-    let newX = lerp(antibody.x, futurePlayerPosition.x, velocity);
-    let newY = lerp(antibody.y, futurePlayerPosition.y, velocity);
+    let newX = lerp(antibody.x, futurePlayerPosition.x, amount);
+    let newY = lerp(antibody.y, futurePlayerPosition.y, amount);
 
     let w2 = antibody.width / 2;
     let h2 = antibody.height / 2;
@@ -457,7 +618,8 @@ function gameLoop(){
                     increaseScoreBy(1);
                 }
 
-                if (p.y < -10) p.isAlive = false;
+                // Remove every projectile that is out of bounds
+                if (p.y < -10 || p.y > screenHeight + 10 || p.x < -10 || p.x > screenWidth + 10) p.isAlive = false;
             }
             
             // Bacteria & Antibody
@@ -482,7 +644,8 @@ function gameLoop(){
                     increaseScoreBy(1);
                 }
 
-                if (p.y < -10) p.isAlive = false;
+                // Remove every projectile that is out of bounds
+                if (p.y < -10 || p.y > screenHeight + 10 || p.x < -10 || p.x > screenWidth + 10) p.isAlive = false;
             }
             
             // Helminths & Antibody
@@ -513,6 +676,7 @@ function gameLoop(){
     }
 }
 
+// Create bacteriophages
 function createViruses(numViruses){
     for(let i = 0; i < numViruses; ++i){
         let v = new Virus(2.5);
@@ -523,6 +687,7 @@ function createViruses(numViruses){
     }
 }
 
+// Create helminths (parasitic worms)
 function createHelminths(numHelminths){
     for(let i = 0; i < numHelminths; ++i){
         let h = new Helminth(2.5);
@@ -533,6 +698,7 @@ function createHelminths(numHelminths){
     }
 }
 
+// Create escherichia bacteria
 function createBacteria(numBacteria){
     for(let i = 0; i < numBacteria; ++i){
         let b = new Bacteria(2.5);
@@ -543,6 +709,7 @@ function createBacteria(numBacteria){
     }
 }
 
+// Load the level by filling it with increasingly random enemies
 function loadLevel(){
     createViruses(level * (Math.random() * (5-3) + 3));
     createHelminths(level * (Math.random() * (5-2) + 2));
@@ -550,6 +717,7 @@ function loadLevel(){
     paused = false;
 }
 
+// When the player dies, clear the game and show game over scene
 function end(){
     // Pause level
     paused = true;
@@ -564,14 +732,51 @@ function end(){
     projectiles.forEach(p => gameScene.removeChild(p));
     projectiles = [];
 
-    // Show game over scene and final score\
-    gameOverScoreLabel = score;
-    gameOverScoreLabel = parseInt(gameOverScoreLabel);
+    // Show game over scene and final score
+    console.log(score);
+
+    // Check if it can be saved as a high score
+    let savedHighScore = localStorage.getItem('highScore');
+    if(savedHighScore == null){
+        localStorage.setItem('highScore', score);
+    }else{
+        savedHighScore = parseInt(savedHighScore);
+        if(score > savedHighScore){
+            localStorage.setItem('highScore', score);
+        }
+    }
+
+    // Show final score and high score
+    gameOverScoreLabel = new PIXI.Text(`Final extermination count: ${score}\nHighest extermination count: ${localStorage.getItem('highScore')}`);
+    gameOverScoreLabel.style = new PIXI.TextStyle({
+        fill: 0xFFFFFF,
+        fontSize: 48,
+        fontFamily: "Copperplate, Copperplate Gothic Light, Fantasy",
+        stroke: 0x38761D,
+        strokeThickness: 3
+    });
+
+    if(window.innerWidth < 768){
+        gameOverScoreLabel.style = new PIXI.TextStyle({
+            fill: 0xFFFFFF,
+            fontSize: 32,
+            fontFamily: "Copperplate, Copperplate Gothic Light, Fantasy",
+            stroke: 0x38761D,
+            strokeThickness: 3,
+        });
+    }
+    
+    gameOverScoreLabel.x = (screenWidth / 2) - (gameOverScoreLabel.width / 2);
+    gameOverScoreLabel.y = screenHeight / 2;
+
+    gameOverScene.addChild(gameOverScoreLabel);
+
     gameOverScene.visible = true;
     gameScene.visible = false;
     deathSound.play();
 }
 
+// Allows the player to fire a projectile
 function fireProjectile(e){
     if(paused) return;
 
@@ -581,6 +786,7 @@ function fireProjectile(e){
     projectileSound.play();
 }
 
+// Add each frame to each sprite sheet's texture array
 function loadSpriteSheet(sprite){
     let spriteSheet;
     let width;
