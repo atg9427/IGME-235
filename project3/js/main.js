@@ -1,5 +1,3 @@
-let gameOverScoreLabel;
-
 "use strict";
 
 // Make screen dimensions and add it to document.body
@@ -19,11 +17,12 @@ gameWindow.loader.add([
     "game-images/helminth_spritesheet.png"
 ]);
 
+// Show progress in console and load the game
 gameWindow.loader.onProgress.add(e => { console.log(`progress=${e.progress}`) });
 gameWindow.loader.onComplete.add(setUpGame);
 gameWindow.loader.load();
 
-// Controls
+// Player Controls
 const keys = {
     W: true,
     A: false,
@@ -31,6 +30,7 @@ const keys = {
     D: false
 };
 
+// Player Direction
 const direction = {
     Up: false,
     Down: false,
@@ -47,16 +47,16 @@ document.addEventListener('keydown', (e) => {
     direction.Right = false
 
     e.preventDefault()
-    if(e.key === "w"){
+    if(e.key == "w"){
         keys.W = false
     }
-    if(e.key === "s"){
+    if(e.key == "s"){
         keys.S = false
     }
-    if(e.key === "a"){
+    if(e.key == "a"){
         keys.A = true
     }
-    if(e.key === "d"){
+    if(e.key == "d"){
         keys.D = true
     }
 
@@ -80,19 +80,19 @@ document.addEventListener('keydown', (e) => {
 // Event to stop moving player
 document.addEventListener('keyup', (e) => {
     e.preventDefault()
-    if(e.key === "w"){
+    if(e.key == "w"){
         keys.W = true
         direction.Up = false
     }
-    if(e.key === "s"){
+    if(e.key == "s"){
         keys.S = true
         direction.Down = false
     }
-    if(e.key === "a"){
+    if(e.key == "a"){
         keys.A = false
         direction.Left = false
     }
-    if(e.key === "d"){
+    if(e.key == "d"){
         keys.D = false
         direction.Right = false
     }
@@ -109,7 +109,7 @@ document.addEventListener('keydown', (e) => {
 // Game variables
 let stage;
 let startScene;
-let gameScene, antibody, background, scoreLabel, lifeLabel, levelLabel, deathSound, damageSound, projectileSound, startSound;
+let gameScene, antibody, background, scoreLabel, lifeLabel, levelLabel, gameOverScoreLabel, deathSound, damageSound, projectileSound, startSound;
 let gameOverScene;
 
 let viruses = [];

@@ -1,7 +1,6 @@
 class Background extends PIXI.AnimatedSprite {
     constructor(x = 0, y = 0){
         super(backgroundTextures);
-        this.color = 0x000000;
         this.anchor.set(0, 0);
         this.scale.set(1);
         this.width = screenWidth;
