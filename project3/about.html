@@ -43,15 +43,16 @@
     <p id="aesthetics">
         Graphics Style: <i><b>Abstract Depiction of the Inside of a Body</b></i><br>
         Sound: <i><b>8-Bit</b></i><br>
-        Events of Sound: <i><b>Scoring, Damage, Death, Background</b></i>
+        Events of Sound: <i><b>Starting Game, Scoring, Shooting, Damage, Death</b></i>
     </p>
         
     <hr>
 
     <h2>Gameplay</h2>
     <p id="gameplay">
-        Moving: <i><b>WASD</b></i><br>
+        Moving: <i><b>WASD Keys</b></i><br>
         Shooting: <i><b>Spacebar</b></i><br>
+        Pausing: <i><b>F Key</b></i><br>
         <br>
         The controls will be shown on the main menu.
     </p>
@@ -74,7 +75,7 @@
 
     <h1>**Documentation**</h1>
     <p id="doc">
-        This project was probably the most difficult to do but the game itself was definitely the most fun to make. I made all of the sprites myself. The only image in this project that is not mine is the <a href="https://www.reddit.com/r/AfterEffects/comments/wp1bbs/made_this_abstract_gif_animation/">background</a>.<br><br>I used the Circle Blaster exercise as a template for my project.
+        This project was probably the most difficult to do but the game itself was definitely the most fun to make. I made all of the sprites myself, using the Piskel application. The only image in this project that is not mine is the <a href="https://www.reddit.com/r/AfterEffects/comments/wp1bbs/made_this_abstract_gif_animation/">background</a>.<br><br>I used the Circle Blaster exercise as a template for my project. However, instead of making the player move along with the mouse's cursor, I made it move with the WASD keys. I also made the space bar the firing button. I even included the F key as a pause button. I later realized that pressing the Caps Lock disabled the moving and pausing buttons so I had to make it so that the Caps Lock did not affect the player's ability to do so.<br><br>For the basic setup of the game, I used the Circle Blaster code as reference. For some parts that I did not understand how to do, I asked ChatGPT questions such as "How can I pause an animation in JavaScript?" or "How can I make a 'keydown' event?" I was able to figure out how to do the rest of the code on my own.<br><br>It took some googling to find out that I could use PIXI to make an animated sprite, which would require an array of sprite sheet textures. For the background, I found a GIF on Reddit (see above), but I soon discovered that I couldn't play a GIF's animation using PIXI. So I used <a href="https://jacklehamster.github.io/utils/gif2sprite/">a website</a> to convert it from a GIF into a sprite sheet.<br><br>The pause screen took around an hour and a half to make. I had to stop every animation and add labels to the game scene inside a 'keydown' event whenever 'paused' was true.<br><br>I decided not to put explosions in the game because I felt it wouldn't make sense for explosions to occur in an immune system.<br><br>Most of my work is in JavaScript so I did not need to use much CSS, though I did only use it to center the game window.
     </p>
 </body>
 </html>

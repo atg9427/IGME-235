@@ -46,17 +46,16 @@ document.addEventListener('keydown', (e) => {
     direction.Left = false
     direction.Right = false
 
-    e.preventDefault()
-    if(e.key == "w"){
+    if(e.key == "w" || e.key == "W"){
         keys.W = false
     }
-    if(e.key == "s"){
+    if(e.key == "s" || e.key == "S"){
         keys.S = false
     }
-    if(e.key == "a"){
+    if(e.key == "a" || e.key == "A"){
         keys.A = true
     }
-    if(e.key == "d"){
+    if(e.key == "d" || e.key == "D"){
         keys.D = true
     }
 
@@ -76,20 +75,19 @@ document.addEventListener('keydown', (e) => {
 
 // Event to stop moving player
 document.addEventListener('keyup', (e) => {
-    e.preventDefault()
-    if(e.key == "w"){
+    if(e.key == "w" || e.key == "W"){
         keys.W = true
         direction.Up = false
     }
-    if(e.key == "s"){
+    if(e.key == "s" || e.key == "S"){
         keys.S = true
         direction.Down = false
     }
-    if(e.key == "a"){
+    if(e.key == "a" || e.key == "A"){
         keys.A = false
         direction.Left = false
     }
-    if(e.key == "d"){
+    if(e.key == "d" || e.key == "D"){
         keys.D = false
         direction.Right = false
     }
@@ -101,7 +99,9 @@ document.addEventListener('keydown', (e) => {
     if(e.key == " " && projectiles.length < 3){
         fireProjectile()
     }
-    if(e.key == "f" && gameScene.visible){
+
+    // Pressing F pauses/unpauses the game
+    if((e.key == "f" || e.key == "F") && gameScene.visible){
         paused = !paused
 
         if(paused == true){
